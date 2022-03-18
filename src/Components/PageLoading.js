@@ -14,7 +14,7 @@ export default function PageLoading() {
   const classes = useStyle();
   return (
     <div className={clsx(classes.pageLoading, "center")}>
-      <CircularProgressComponent />
+      <CircularProgressComponent size={40} />
     </div>
   );
 }
