@@ -47,6 +47,9 @@ const useStyle = makeStyles({
     width: "calc(100% - 440px)",
     "&>p": {
       textTransform: "capitalize",
+      "&>b": {
+        textTransform: "lowercase",
+      },
     },
     "&>h6": {
       fontWeight: "bold",
@@ -70,6 +73,16 @@ const useStyle = makeStyles({
       marginLeft: 5,
     },
   },
+  gridBox: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#fff",
+    boxSizing: "border-box",
+    "&>span": {
+      fontSize: "100%",
+    },
+  },
 });
 
 export default function Home() {
@@ -78,20 +91,26 @@ export default function Home() {
   const [row, setRow] = useState("");
   const [noOfColors, setNoOfColors] = useState("");
   const [randomColors, setRandomColors] = useState([]);
-  const [resultTotalCells, setResultTotalCells] = useState(0);
-  const [resultColor, setResultColor] = useState("#000");
-  const [toggleForm, setToggleForm] = useState(false);
+  const [randomColorsForDiv, setRandomColorsForDiv] = useState([]);
+  const [finalResult, setFinalResult] = useState([]);
+  let resultData = [];
   const getRandomNumber = (min = 0, max = 255) =>
     Math.floor(Math.random() * max) + min;
+  const getNum = (e) =>
+    e.target.value?.replace(/\D/g, "")
+      ? parseInt(e.target.value?.replace(/\D/g, ""))
+      : "";
+  const [toggle, setToggle] = useState(false);
 
   const handleReset = () => {
     setColumn("");
     setRow("");
     setNoOfColors("");
     setRandomColors([]);
-    setResultColor("#000");
-    setResultTotalCells(0);
-    setToggleForm(false);
+    setRandomColorsForDiv([]);
+    setFinalResult([]);
+    resultData = [];
+    setToggle(false);
   };
 
   const generateRandomColors = () => {
@@ -104,14 +123,68 @@ export default function Home() {
         }
       } while (randomColorsArr?.length !== noOfColors);
       setRandomColors(randomColorsArr);
+      const randomColorsForDivArr = [...Array(column * row)]?.map(
+        () => randomColorsArr[getRandomNumber(0, noOfColors - 1)]
+      );
+      setRandomColorsForDiv(randomColorsForDivArr);
+      return randomColorsForDivArr;
+    }
+  };
+
+  const algorithm = (i, arr) => {
+    let nearestIndex = [i - column, i + column];
+    nearestIndex = nearestIndex?.filter(
+      (index) => index >= 0 && index < arr.length
+    );
+    if (i % column !== 0) {
+      nearestIndex.unshift(i - 1);
+    }
+    let lastRowIndex = [...Array(column * row + 1)]
+      ?.map((item, lastI) => (lastI % column === 0 ? lastI - 1 : -1))
+      ?.filter((item) => item > 0);
+    if (!lastRowIndex.includes(i)) {
+      nearestIndex.splice(-1, 0, i + 1);
+    }
+    for (let nearestI of nearestIndex) {
+      if (
+        arr[i] === arr[nearestI] &&
+        !resultData[resultData?.length - 1].includes(nearestI)
+      ) {
+        resultData[resultData?.length - 1].push(nearestI);
+        algorithm(nearestI, arr);
+      }
+    }
+  };
+
+  const getBiggestAreaWithSameColor = (arr) => {
+    for (let i = 0; i < arr?.length; i++) {
+      if (resultData?.flatMap((arr) => arr).includes(i)) {
+        continue;
+      } else {
+        resultData.push([i]);
+        algorithm(i, arr);
+      }
     }
   };
 
   const handleSubmit = () => {
-    setToggleForm(true);
-    generateRandomColors();
+    setToggle(true);
+    const arr = generateRandomColors();
+    getBiggestAreaWithSameColor(arr);
+    let maxLength = resultData
+      ?.sort((a, b) => a.length - b.length)
+      .at(-1).length;
+    setFinalResult(
+      resultData
+        ?.filter((item) => item?.length === maxLength)
+        ?.map((item) => {
+          return {
+            color: arr[item[0]],
+            cellArr: item,
+          };
+        })
+    );
   };
-
   return (
     <Grid container justifyContent={"center"} className={classes.homeContainer}>
       <Grid className={classes.homeContent}>
@@ -129,46 +202,48 @@ export default function Home() {
             autoFocus
             placeholder="Enter columns"
             value={column}
-            onChange={(e) =>
-              setColumn(parseInt(e.target.value?.replace(/\D/g, "")))
-            }
+            onChange={(e) => setColumn(getNum(e))}
             InputProps={{ disableUnderline: true }}
             variant="standard"
             className={classes.textfield}
-            disabled={toggleForm}
+            disabled={toggle}
           ></TextField>
           <TextField
             type={"text"}
             placeholder="Enter rows"
             value={row}
-            onChange={(e) =>
-              setRow(parseInt(e.target.value?.replace(/\D/g, "")))
-            }
+            onChange={(e) => setRow(getNum(e))}
             InputProps={{ disableUnderline: true }}
             variant="standard"
             className={classes.textfield}
-            disabled={toggleForm}
+            disabled={toggle}
           ></TextField>
           <TextField
             type={"text"}
             placeholder="Enter no of colors"
             value={noOfColors}
-            onChange={(e) =>
-              setNoOfColors(parseInt(e.target.value?.replace(/\D/g, "")))
-            }
+            onChange={(e) => setNoOfColors(getNum(e))}
             InputProps={{ disableUnderline: true }}
             variant="standard"
             className={classes.textfield}
-            disabled={toggleForm}
+            disabled={toggle}
           ></TextField>
           <Button
-            onClick={() => {
-              toggleForm ? handleReset() : handleSubmit();
-            }}
+            onClick={handleSubmit}
             color="primary"
             variant="contained"
+            disabled={!column || !row || !noOfColors}
+            sx={{ mr: 2 }}
           >
-            {toggleForm ? "Reset" : "Submit"}
+            Submit
+          </Button>
+          <Button
+            onClick={handleReset}
+            color="secondary"
+            disabled={!column && !row && !noOfColors}
+            variant="contained"
+          >
+            Reset
           </Button>
         </Grid>
         <Grid
@@ -178,17 +253,27 @@ export default function Home() {
           className={classes.outputRootDiv}
         >
           <Grid className={classes.taskOutput}>
-            {[...Array(column * row)]?.map((item, key) => {
-              const color = randomColors[getRandomNumber(0, noOfColors)];
+            {randomColorsForDiv?.map((item, key) => {
+              const arrIndex = finalResult?.flatMap((item) => item?.cellArr);
               return (
                 <Grid
                   key={key}
                   sx={{
                     width: `calc(400px / ${column})`,
                     height: `calc(400px / ${row})`,
-                    background: color,
+                    background: item,
+                    border: arrIndex?.includes(key)
+                      ? `2px solid white`
+                      : "unset",
                   }}
-                ></Grid>
+                  className={classes.gridBox}
+                >
+                  {arrIndex?.includes(key) ? (
+                    <span>{finalResult[0]?.cellArr?.length}</span>
+                  ) : (
+                    ""
+                  )}
+                </Grid>
               );
             })}
           </Grid>
@@ -203,16 +288,22 @@ export default function Home() {
               number of colors: <b>{noOfColors}</b>
             </Typography>
             <Grid className={classes.colorsList}>
-              {randomColors?.map((color) => {
-                return <Grid sx={{ background: color }}></Grid>;
+              {randomColors?.map((color, key) => {
+                return <Grid sx={{ background: color }} key={key}></Grid>;
               })}
             </Grid>
-            <Typography variant="h6">Result</Typography>
-            <Typography className={classes.resultText}>
-              the biggest area contains <b>{resultTotalCells}</b> cells with{" "}
-              <b style={{ color: resultColor }}>{resultColor}</b>
-              <div style={{ background: resultColor }}></div> color
+            <Typography variant="h6">
+              Result{` (${finalResult?.length})`}
             </Typography>
+            {finalResult?.map((item, key) => {
+              return (
+                <Typography key={key} className={classes.resultText}>
+                  the biggest area contains <b>{item?.cellArr?.length}</b> cells
+                  with <b style={{ color: item?.color }}>{item?.color}</b>
+                  <div style={{ background: item?.color }}></div> color
+                </Typography>
+              );
+            })}
           </Grid>
         </Grid>
       </Grid>
