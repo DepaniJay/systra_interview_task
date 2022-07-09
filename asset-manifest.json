@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/static/css/main.d5da6aae.css",
-    "main.js": "/static/js/main.96f9f944.js",
-    "index.html": "/index.html",
-    "main.d5da6aae.css.map": "/static/css/main.d5da6aae.css.map",
-    "main.96f9f944.js.map": "/static/js/main.96f9f944.js.map"
+    "main.css": "/systra_interview_task.github.io/static/css/main.d5da6aae.css",
+    "main.js": "/systra_interview_task.github.io/static/js/main.a23756b0.js",
+    "index.html": "/systra_interview_task.github.io/index.html",
+    "main.d5da6aae.css.map": "/systra_interview_task.github.io/static/css/main.d5da6aae.css.map",
+    "main.a23756b0.js.map": "/systra_interview_task.github.io/static/js/main.a23756b0.js.map"
   },
   "entrypoints": [
     "static/css/main.d5da6aae.css",
-    "static/js/main.96f9f944.js"
+    "static/js/main.a23756b0.js"
   ]
 }
