@@ -2,7 +2,7 @@
   "name": "react-basic-setup",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://depanijay.github.io/systra_interview_task.github.io",
+  "homepage": "https://DepaniJay.github.io/systra_interview_task",
   "dependencies": {
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
