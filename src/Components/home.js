@@ -22,9 +22,9 @@ const useStyle = makeStyles({
   },
   textfield: {
     height: 40,
-    border: "1px solid #999",
+    border: "1px solid #999 !important",
     borderRadius: "5px",
-    marginRight: 10,
+    marginRight: "10px !important",
     "&>div": {
       padding: "0px",
       "&>input": {
