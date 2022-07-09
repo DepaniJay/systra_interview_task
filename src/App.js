@@ -1,14 +1,8 @@
 import React from "react";
-import Main from "./Main";
 import "./App.css";
-import { BrowserRouter } from "react-router-dom";
-
+import Home from "./Components/Home";
 function App() {
-  return (
-    <BrowserRouter>
-      <Main />
-    </BrowserRouter>
-  );
+  return <Home />;
 }
 
 export default App;
