@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/systra_interview_task/static/css/main.d5da6aae.css",
-    "main.js": "/systra_interview_task/static/js/main.fa9fef3b.js",
+    "main.js": "/systra_interview_task/static/js/main.b4bf8421.js",
     "index.html": "/systra_interview_task/index.html",
     "main.d5da6aae.css.map": "/systra_interview_task/static/css/main.d5da6aae.css.map",
-    "main.fa9fef3b.js.map": "/systra_interview_task/static/js/main.fa9fef3b.js.map"
+    "main.b4bf8421.js.map": "/systra_interview_task/static/js/main.b4bf8421.js.map"
   },
   "entrypoints": [
     "static/css/main.d5da6aae.css",
-    "static/js/main.fa9fef3b.js"
+    "static/js/main.b4bf8421.js"
   ]
 }
